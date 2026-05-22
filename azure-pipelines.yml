@@ -6,7 +6,7 @@ pool:
 
 variables:
   
-  azureSubscription: '<easypark>'
+  azureSubscription: '<EasyParkCloud>'
  
   webAppName: '<easypark>'
 
