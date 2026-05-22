@@ -6,9 +6,9 @@ pool:
 
 variables:
   
-  azureSubscription: '<EasyParkCloud>'
+  azureSubscription: '<Vi-debu>'
  
-  webAppName: '<EasyParkCloud>'
+  webAppName: '<rg-api-easypark>'
 
 stages:
 - stage: Build
