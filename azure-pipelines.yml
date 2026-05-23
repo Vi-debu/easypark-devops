@@ -2,31 +2,50 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
+
+variables:
+  resourceGroup: 'Grupo-EasyPark'
+  servicePlan: 'Plano-EasyPark'
+  webAppName: 'easypark-app-88'
+  location: 'eastus'
 
 steps:
-
 - checkout: self
 
-- script: |
-    docker pull nginx
-  displayName: 'Baixar imagem Docker'
+- task: AzureCLI@2
+  displayName: 'Criar Web App'
+  inputs:
+    azureSubscription: 'SUA-CONEXAO-AZURE'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az group create \
+        --name $(resourceGroup) \
+        --location $(location)
 
-- script: |
-    docker run -d --name easypark-container -p 80:80 nginx
-  displayName: 'Criar Container'
+      az appservice plan create \
+        --name $(servicePlan) \
+        --resource-group $(resourceGroup) \
+        --sku B1 \
+        --is-linux
 
-- script: |
-    docker ps
-  displayName: 'Container Rodando'
+      az webapp create \
+        --resource-group $(resourceGroup) \
+        --plan $(servicePlan) \
+        --name $(webAppName) \
+        --runtime "NODE|18-lts"
 
 - script: |
     mkdir artifact
-    echo "EasyPark deploy realizado com sucesso" > artifact/deploy.txt
+
+    echo "Deploy realizado com sucesso" > artifact/deploy.txt
+    echo "Web App: https://$(webAppName).azurewebsites.net" >> artifact/deploy.txt
+
   displayName: 'Criar Artifact'
 
 - task: PublishBuildArtifacts@1
+  displayName: 'Publicar Artifact'
   inputs:
     PathtoPublish: 'artifact'
     ArtifactName: 'easypark-artifact'
-  displayName: 'Publicar Artifact'
