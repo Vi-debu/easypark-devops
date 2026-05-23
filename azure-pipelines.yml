@@ -21,14 +21,13 @@ steps:
   displayName: 'Docker Compose'
 
 - script: |
-    ls
-  displayName: 'Arquivos do Projeto'
+    docker compose up --build -d
+  displayName: 'Subindo containers'
 
 - script: |
-    echo "Build realizado"
-    echo "Deploy realizado"
-  displayName: 'CI/CD'
+    docker ps
+  displayName: 'Containers em execução'
 
 - script: |
-    echo "Pipeline finalizada com sucesso"
-  displayName: 'Final'
+    echo "Deploy realizado com sucesso"
+  displayName: 'Deploy'
