@@ -14,21 +14,31 @@ steps:
 
 - script: |
     docker --version
-  displayName: 'Docker'
+  displayName: 'Verificar Docker'
 
 - script: |
-    docker compose version || docker-compose --version
-  displayName: 'Docker Compose'
+    docker pull nginx
+  displayName: 'Baixar imagem Docker'
 
 - script: |
-    ls
-  displayName: 'Arquivos do Projeto'
+    docker run -d --name easypark-container -p 80:80 nginx
+  displayName: 'Criar Container'
 
 - script: |
-    echo "Build realizado"
-    echo "Deploy realizado"
-  displayName: 'CI/CD'
+    docker ps
+  displayName: 'Verificar Container'
+
+- script: |
+    mkdir artefato
+    echo "Deploy EasyPark realizado com sucesso" > artefato/deploy.txt
+  displayName: 'Criar Artefato'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'artefato'
+    ArtifactName: 'easypark-artifact'
+  displayName: 'Publicar Artefato'
 
 - script: |
     echo "Pipeline finalizada com sucesso"
-  displayName: 'Final'
+  displayName: 'Finalização'
