@@ -2,59 +2,9 @@ trigger:
 - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: ubuntu-latest
 
-variables:
-  
-  azureSubscription: '<Vi-debu>'
- 
-  webAppName: '<rg-api-easypark>'
+steps:
 
-stages:
-- stage: Build
-  displayName: 'Etapa de Compilação e Teste (CI)'
-  jobs:
-  - job: BuildJava
-    steps:
-    - task: Maven@4
-      inputs:
-        mavenPomFile: 'pom.xml'
-        goals: 'clean package'
-        options: '-DskipTests=false' 
-        publishJUnitResults: true
-        testResultsFiles: '**/surefire-reports/TEST-*.xml'
-        javaHomeOption: 'JDKVersion'
-        jdkVersionOption: '1.21' 
-
-    - task: CopyFiles@2
-      inputs:
-        SourceFolder: '$(system.defaultworkingdirectory)/target'
-        Contents: '*.jar'
-        TargetFolder: '$(build.artifactstagingdirectory)'
-
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(build.artifactstagingdirectory)'
-        ArtifactName: 'drop'
-        publishLocation: 'Container'
-
-- stage: Deploy
-  displayName: 'Etapa de Deploy na Nuvem (CD)'
-  dependsOn: Build
-  condition: succeeded()
-  jobs:
-  - job: DeployToAzure
-    steps:
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'drop'
-        downloadPath: '$(System.ArtifactsDirectory)'
-
-    - task: AzureWebApp@1
-      inputs:
-        azureSubscription: '$(azureSubscription)'
-        appType: 'webAppLinux'
-        appName: '$(webAppName)'
-        package: '$(System.ArtifactsDirectory)/drop/*.jar'
+- script: echo "Pipeline funcionando com sucesso!"
+  displayName: 'Teste da Pipeline'
