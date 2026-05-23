@@ -6,18 +6,11 @@ pool:
 
 steps:
 
-- task: DockerInstaller@0
-  inputs:
-    dockerVersion: '20.10.7'
+- script: echo "Pipeline funcionando"
+  displayName: 'Teste da pipeline'
 
-- script: |
-    docker-compose up --build -d
-  displayName: 'Build e execução Docker Compose'
+- script: docker --version
+  displayName: 'Verificar Docker'
 
-- script: |
-    docker ps
-  displayName: 'Verificar containers'
-
-- script: |
-    echo "Deploy realizado com sucesso"
-  displayName: 'Deploy'
+- script: docker-compose version
+  displayName: 'Verificar Docker Compose'
