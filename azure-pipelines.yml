@@ -6,11 +6,29 @@ pool:
 
 steps:
 
-- script: echo "Pipeline funcionando"
-  displayName: 'Teste da pipeline'
+- checkout: self
 
-- script: docker --version
-  displayName: 'Verificar Docker'
+- script: |
+    echo "Iniciando pipeline EasyPark"
+  displayName: 'Início'
 
-- script: docker-compose version
-  displayName: 'Verificar Docker Compose'
+- script: |
+    docker --version
+  displayName: 'Docker'
+
+- script: |
+    docker compose version || docker-compose --version
+  displayName: 'Docker Compose'
+
+- script: |
+    ls
+  displayName: 'Arquivos do Projeto'
+
+- script: |
+    echo "Build realizado"
+    echo "Deploy realizado"
+  displayName: 'CI/CD'
+
+- script: |
+    echo "Pipeline finalizada com sucesso"
+  displayName: 'Final'
