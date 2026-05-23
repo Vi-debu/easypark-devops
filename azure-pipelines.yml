@@ -9,25 +9,17 @@ steps:
 - checkout: self
 
 - script: |
-    echo "Iniciando pipeline EasyPark"
-  displayName: 'Início'
-
-- script: |
-    docker --version
-  displayName: 'Docker'
-
-- script: |
-    docker compose version || docker-compose --version
-  displayName: 'Docker Compose'
+    echo "DB_HOST=$(DB_HOST)" >> .env
+    echo "DB_PORT=$(DB_PORT)" >> .env
+    echo "DB_USER=$(DB_USER)" >> .env
+    echo "DB_PASSWORD=$(DB_PASSWORD)" >> .env
+    echo "DB_SERVICE=$(DB_SERVICE)" >> .env
+  displayName: 'Criar .env'
 
 - script: |
     docker compose up --build -d
-  displayName: 'Subindo containers'
+  displayName: 'Subindo aplicação'
 
 - script: |
     docker ps
-  displayName: 'Containers em execução'
-
-- script: |
-    echo "Deploy realizado com sucesso"
-  displayName: 'Deploy'
+  displayName: 'Containers Rodando'
