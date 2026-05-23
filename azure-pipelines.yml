@@ -12,33 +12,23 @@ steps:
     echo "Iniciando pipeline EasyPark"
   displayName: 'Início'
 
-- script: |
-    docker --version
-  displayName: 'Verificar Docker'
-
-- script: |
-    docker pull nginx
-  displayName: 'Baixar imagem Docker'
-
-- script: |
-    docker run -d --name easypark-container -p 80:80 nginx
-  displayName: 'Criar Container'
-
-- script: |
-    docker ps
-  displayName: 'Verificar Container'
-
-- script: |
-    mkdir artefato
-    echo "Deploy EasyPark realizado com sucesso" > artefato/deploy.txt
-  displayName: 'Criar Artefato'
-
-- task: PublishBuildArtifacts@1
+- task: AzureCLI@2
   inputs:
-    PathtoPublish: 'artefato'
-    ArtifactName: 'easypark-artifact'
-  displayName: 'Publicar Artefato'
+    azureSubscription: 'SUA-CONEXAO-AZURE'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az group create --name easypark-rg --location brazilsouth
+
+      az vm create \
+        --resource-group easypark-rg \
+        --name easypark-vm \
+        --image Ubuntu2204 \
+        --admin-username azureuser \
+        --generate-ssh-keys
+
+  displayName: 'Criar Máquina Virtual'
 
 - script: |
-    echo "Pipeline finalizada com sucesso"
-  displayName: 'Finalização'
+    echo "VM criada com sucesso"
+  displayName: 'Deploy'
