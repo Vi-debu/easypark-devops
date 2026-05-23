@@ -9,7 +9,7 @@ WORKDIR /app
 #COPY --link .mvn .mvn/
 
 # Ensure Maven wrapper is executable and download dependencies (offline cache)
-RUN chmod +x mvnw && ./mvnw dependency:go-offline
+#RUN chmod +x mvnw && ./mvnw dependency:go-offline
 
 # Copy source code
 COPY --link src ./src/
