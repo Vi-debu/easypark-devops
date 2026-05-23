@@ -5,8 +5,8 @@ FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 
 # Copy Maven wrapper and project metadata first for dependency caching
-COPY --link pom.xml mvnw ./
-COPY --link .mvn .mvn/
+#COPY --link pom.xml mvnw ./
+#COPY --link .mvn .mvn/
 
 # Ensure Maven wrapper is executable and download dependencies (offline cache)
 RUN chmod +x mvnw && ./mvnw dependency:go-offline
