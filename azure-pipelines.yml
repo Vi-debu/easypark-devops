@@ -9,26 +9,13 @@ steps:
 - checkout: self
 
 - script: |
-    echo "Iniciando pipeline EasyPark"
-  displayName: 'Início'
-
-- task: AzureCLI@2
-  inputs:
-    azureSubscription: 'SUA-CONEXAO-AZURE'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      az group create --name easypark-rg --location brazilsouth
-
-      az vm create \
-        --resource-group easypark-rg \
-        --name easypark-vm \
-        --image Ubuntu2204 \
-        --admin-username azureuser \
-        --generate-ssh-keys
-
-  displayName: 'Criar Máquina Virtual'
+    docker pull nginx
+  displayName: 'Baixar imagem'
 
 - script: |
-    echo "VM criada com sucesso"
-  displayName: 'Deploy'
+    docker run -d --name easypark-container -p 80:80 nginx
+  displayName: 'Criar Container'
+
+- script: |
+    docker ps
+  displayName: 'Container Rodando'
