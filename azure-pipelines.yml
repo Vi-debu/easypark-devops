@@ -10,7 +10,7 @@ steps:
 
 - script: |
     docker pull nginx
-  displayName: 'Baixar imagem'
+  displayName: 'Baixar imagem Docker'
 
 - script: |
     docker run -d --name easypark-container -p 80:80 nginx
@@ -19,3 +19,14 @@ steps:
 - script: |
     docker ps
   displayName: 'Container Rodando'
+
+- script: |
+    mkdir artifact
+    echo "EasyPark deploy realizado com sucesso" > artifact/deploy.txt
+  displayName: 'Criar Artifact'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'artifact'
+    ArtifactName: 'easypark-artifact'
+  displayName: 'Publicar Artifact'
