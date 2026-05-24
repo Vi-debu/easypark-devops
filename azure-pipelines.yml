@@ -19,7 +19,7 @@ steps:
         --resource-group EasyParkRG \
         --location eastus \
         --sku B1 \
-        --runtime "NODE|18-lts"
+        --html
 
 - script: |
     mkdir artifact
@@ -29,4 +29,4 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: artifact
-    ArtifactName: easypark-artifact
+    ArtifactName: easypark-artifact'
