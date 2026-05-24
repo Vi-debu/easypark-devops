@@ -6,50 +6,31 @@ pool:
 
 variables:
   resourceGroup: 'EasyPark-RG'
-  appServicePlan: 'EasyPark-Plan'
-  webAppName: 'easypark-webapp-88'
+  servicePlan: 'EasyPark-Plan'
+  webAppName: 'easypark-app-88'
   location: 'eastus'
 
 steps:
-
 - checkout: self
 
 - task: AzureCLI@2
-  displayName: 'Criar Web App EasyPark'
+  displayName: 'Criar Infraestrutura no Azure (Web App)'
   inputs:
-    azureSubscription: 'SUA-CONEXAO-AZURE'
+    azureSubscription: 'Sua-Conexao-Com-O-Azure'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
-
-      az group create \
-        --name $(resourceGroup) \
-        --location $(location)
-
-      az appservice plan create \
-        --name $(appServicePlan) \
-        --resource-group $(resourceGroup) \
-        --sku B1 \
-        --is-linux
-
-      az webapp create \
-        --resource-group $(resourceGroup) \
-        --plan $(appServicePlan) \
-        --name $(webAppName) \
-        --deployment-container-image-name nginx
+      az appservice plan create --name $(servicePlan) --resource-group $(resourceGroup) --sku B1 --is-linux --location $(location)
+      az webapp create --name $(webAppName) --resource-group $(resourceGroup) --plan $(servicePlan) --deployment-container-image-name "nginx:latest"
 
 - script: |
-
     mkdir artifact
-
     echo "EasyPark deploy realizado com sucesso" > artifact/deploy.txt
-
-    echo "https://$(webAppName).azurewebsites.net" >> artifact/deploy.txt
-
-  displayName: 'Criar Artifact'
+    echo "Seu app estará disponível em: https://$(webAppName).azurewebsites.net" >> artifact/deploy.txt
+  displayName: 'Criar Informações do Deploy'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: 'artifact'
+    尋athtoPublish: 'artifact'
     ArtifactName: 'easypark-artifact'
   displayName: 'Publicar Artifact'
