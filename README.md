@@ -310,7 +310,7 @@ INNER JOIN tipo_vaga tv on tv.Id  = v.tipo_vaga_id
 
 ## Links do Projeto
 
-* **Repositório GitHub:** [EasyPark DevOps GitHub]([https://github.com/Vi-debu/easypark-devops.git])
+* **Repositório GitHub:** ([https://github.com/Vi-debu/easypark-devops.git])
 * **Vídeo Demonstrativo:** ([https://youtu.be/Cez0EF930uU])
 
 ```
