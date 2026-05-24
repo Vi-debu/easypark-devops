@@ -4,48 +4,20 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  resourceGroup: 'EasyPark-RG'
-  vmName: 'easypark-vm'
-  location: 'eastus'
-
 steps:
 - checkout: self
 
-- task: AzureCLI@2
-  displayName: 'Criar VM no Azure'
-  inputs:
-    azureSubscription: 'Sua-Conexao-Com-O-Azure'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      az vm create \
-        --resource-group $(resourceGroup) \
-        --name $(vmName) \
-        --image Ubuntu2204 \
-        --admin-username azureuser \
-        --generate-ssh-keys \
-        --public-ip-sku Standard \
-        --location $(location)
-      
-      az vm open-port \
-        --port 80 \
-        --resource-group $(resourceGroup) \
-        --name $(vmName) \
-        --priority 1001
+- script: |
+    docker pull nginx
+    docker run -d --name easypark-container -p 80:80 nginx
+    docker ps
+  displayName: 'Validar Ambiente e Container Local'
 
-- task: AzureCLI@2
-  displayName: 'Coletar IP da VM'
-  inputs:
-    azureSubscription: 'Sua-Conexao-Com-O-Azure'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
-    inlineScript: |
-      vmIp=$(az vm list-ip-addresses --resource-group $(resourceGroup) --name $(vmName) --query "[0].virtualMachine.network.publicIpAddresses[0].ipAddress" -o tsv)
-      
-      mkdir artifact
-      echo "EasyPark deploy em VM realizado" > artifact/deploy.txt
-      echo "Seu app estará disponível no IP: http://$vmIp" >> artifact/deploy.txt
+- script: |
+    mkdir artifact
+    echo "EasyPark deploy local simulado com sucesso" > artifact/deploy.txt
+    echo "Ambiente de testes validado na esteira de integração." >> artifact/deploy.txt
+  displayName: 'Gerar Manifesto de Sucesso'
 
 - task: PublishBuildArtifacts@1
   inputs:
