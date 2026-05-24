@@ -2,46 +2,40 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
 variables:
-  resourceGroup: EasyParkRG
-  plan: EasyParkPlan
-  webapp: easyparkwebapp88
-  location: eastus
+  webAppName: 'api-easypark'
 
 steps:
+- checkout: self
 
-- task: AzureCLI@2
-  displayName: Criar Web App EasyPark
+- task: ArchiveFiles@2
+  displayName: 'Compactar arquivos do projeto'
   inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Fazer Deploy para o Azure Web App'
+  inputs:
+    ConnectionType: 'AzureRM'
     azureSubscription: 'SUA-CONEXAO-AZURE'
-    scriptType: bash
-    scriptLocation: inlineScript
-    inlineScript: |
-
-      az group create \
-        --name $(resourceGroup) \
-        --location $(location)
-
-      az appservice plan create \
-        --name $(plan) \
-        --resource-group $(resourceGroup) \
-        --sku F1 \
-        --is-linux
-
-      az webapp create \
-        --resource-group $(resourceGroup) \
-        --plan $(plan) \
-        --name $(webapp) \
-        --runtime "PYTHON|3.11"
+    appType: 'webAppLinux'
+    WebAppName: '$(webAppName)'
+    package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
 
 - script: |
     mkdir artifact
-    echo "EasyPark criado com sucesso" > artifact/deploy.txt
-  displayName: Criar Artifact
+    echo "EasyPark deploy realizado com sucesso" > artifact/deploy.txt
+    echo "Seu app estará disponível em: https://$(webAppName).azurewebsites.net" >> artifact/deploy.txt
+  displayName: 'Criar Informações do Deploy'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: artifact
-    ArtifactName: easypark-artifact
+    PathtoPublish: 'artifact'
+    ArtifactName: 'easypark-artifact'
+  displayName: 'Publicar Artifact'
