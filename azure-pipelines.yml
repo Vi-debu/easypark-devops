@@ -4,20 +4,35 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  webAppName: 'api-easypark'
+
 steps:
 - checkout: self
 
-- script: |
-    docker pull nginx
-    docker run -d --name easypark-container -p 80:80 nginx
-    docker ps
-  displayName: 'Validar Ambiente e Container Local'
+- task: ArchiveFiles@2
+  displayName: 'Compactar arquivos do projeto'
+  inputs:
+    rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+
+- task: AzureRmWebAppDeployment@4
+  displayName: 'Fazer Deploy para o Azure Web App'
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Sua-Conexao-Com-O-Azure'
+    appType: 'webAppLinux'
+    WebAppName: '$(webAppName)'
+    package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
 
 - script: |
     mkdir artifact
-    echo "EasyPark deploy local simulado com sucesso" > artifact/deploy.txt
-    echo "Ambiente de testes validado na esteira de integração." >> artifact/deploy.txt
-  displayName: 'Gerar Manifesto de Sucesso'
+    echo "EasyPark deploy realizado com sucesso" > artifact/deploy.txt
+    echo "Seu app estará disponível em: https://$(webAppName).azurewebsites.net" >> artifact/deploy.txt
+  displayName: 'Criar Informações do Deploy'
 
 - task: PublishBuildArtifacts@1
   inputs:
