@@ -4,35 +4,29 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
-variables:
-  resourceGroup: EasyPark-RG-2
-  appServicePlan: EasyPark-Plan-2
-  webAppName: easypark-webapp-99
-  location: eastus
-
 steps:
 
 - task: AzureCLI@2
-  displayName: Criar infraestrutura EasyPark
+  displayName: Criar Web App EasyPark
   inputs:
     azureSubscription: 'SUA-CONEXAO-AZURE'
     scriptType: bash
     scriptLocation: inlineScript
     inlineScript: |
-      set -e
 
-      az account show
-
-      az group create -n $(resourceGroup) -l $(location)
-
-      az appservice plan create \
-        -n $(appServicePlan) \
-        -g $(resourceGroup) \
+      az webapp up \
+        --name easyparkwebapp88 \
+        --resource-group EasyParkRG \
+        --location eastus \
         --sku B1 \
-        --is-linux
-
-      az webapp create \
-        -n $(webAppName) \
-        -g $(resourceGroup) \
-        -p $(appServicePlan) \
         --runtime "NODE|18-lts"
+
+- script: |
+    mkdir artifact
+    echo "EasyPark criado com sucesso" > artifact/deploy.txt
+  displayName: Criar Artifact
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: artifact
+    ArtifactName: easypark-artifact
