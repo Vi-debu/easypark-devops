@@ -11,17 +11,11 @@ A aplicação foi desenvolvida utilizando as seguintes tecnologias:
 * **Azure DevOps** (Pipeline CI/CD)
 * **GitHub** (Versionamento de código)
 
-O sistema realiza o gerenciamento das vagas e disponibiliza os dados através de uma API REST hospedada na nuvem Azure.
-
 ---
 
 ##  Objetivo
+
 O objetivo do projeto foi implementar uma esteira DevOps completa utilizando conceitos de CI/CD para automatizar:
-* Integração contínua do código.
-* Empacotamento da aplicação.
-* Deploy automático em ambiente de produção.
-* Publicação de artifacts de build.
-* Hospedagem escalável em nuvem.
 
 ---
 
@@ -92,9 +86,9 @@ git push origin main
 
 | Campo | Valor |
 | --- | --- |
-| **Runtime Stack** | Java 17 |
+| **Runtime Stack** | Java 21 |
 | **Sistema Operacional** | Linux |
-| **Região** | Canada Central |
+| **Região** | brazil south |
 | **Nome do App** | api-easypark |
 
 ### 5. Criar Service Connection no Azure DevOps
@@ -112,7 +106,7 @@ git push origin main
 
 ---
 
-## 📄 7. Código da Pipeline Utilizada
+## 7. Código da Pipeline Utilizada
 
 Arquivo: `azure-pipelines.yml`
 
@@ -226,7 +220,7 @@ A API pode ser acessada publicamente através da URL base:
 
 > **Link Principal:** (https://api-easypark-agh6f3dugbemcfbh.brazilsouth-01.azurewebsites.net/web/login?logout)
 
-### Testando Endpoints via Postman/Insomnia
+### Endpoints via Postman
 
 * **GET** — Listar todas as vagas:
 * (https://api-easypark-agh6f3dugbemcfbh.brazilsouth-01.azurewebsites.net/web/login?logout)
@@ -281,14 +275,13 @@ A API pode ser acessada publicamente através da URL base:
 
 
 
-* **DELETE** — Remover uma vaga:
+* **DELETE** :
 * Selecione o método `DELETE`, configure a rota correspondente ao ID desejado e envie a requisição.
 
 
 
 ### 11. Verificar Dados no Oracle
 
-Para garantir a persistência correta, a validação das alterações pode ser feita direto no banco de dados executando a query:
 
 ```sql
 SELECT * FROM tb_vaga;
@@ -307,16 +300,6 @@ INNER JOIN tipo_vaga tv on tv.Id  = v.tipo_vaga_id
 
 ---
 
-## Resultado Final Obtido
-
-Com o término da configuração da pipeline, alcançamos os seguintes resultados práticos:
-
-1. Todo fluxo de modificação de código vira um deploy automatizado sem necessidade de compilação local manual.
-2. Redução de falhas humanas durante o empacotamento do projeto.
-3. Histórico transparente de builds e artefatos gerados acessível a todo o time através do Azure DevOps.
-
----
-
 ## Integrantes
 
 * **Gabriel Cruz** — RM 559613
@@ -325,9 +308,9 @@ Com o término da configuração da pipeline, alcançamos os seguintes resultado
 
 ---
 
-## 🔗 Links do Projeto
+## Links do Projeto
 
-* **Repositório GitHub:** [EasyPark DevOps GitHub](https://github.com/Vi-debu/easypark-java.git)
+* **Repositório GitHub:** [EasyPark DevOps GitHub]([https://github.com/Vi-debu/easypark-devops.git])
 * **Vídeo Demonstrativo:** [Vídeo do Projeto EasyPark]([https://youtu.be/Cez0EF930uU])
 
 ```
