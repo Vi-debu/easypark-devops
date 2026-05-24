@@ -6,31 +6,49 @@ pool:
 
 variables:
   resourceGroup: 'EasyPark-RG'
-  servicePlan: 'EasyPark-Plan'
-  webAppName: 'easypark-app-88'
+  vmName: 'easypark-vm'
   location: 'eastus'
 
 steps:
 - checkout: self
 
 - task: AzureCLI@2
-  displayName: 'Criar Infraestrutura no Azure (Web App)'
+  displayName: 'Criar VM no Azure'
   inputs:
     azureSubscription: 'Sua-Conexao-Com-O-Azure'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
-      az appservice plan create --name $(servicePlan) --resource-group $(resourceGroup) --sku B1 --is-linux --location $(location)
-      az webapp create --name $(webAppName) --resource-group $(resourceGroup) --plan $(servicePlan) --deployment-container-image-name "nginx:latest"
+      az vm create \
+        --resource-group $(resourceGroup) \
+        --name $(vmName) \
+        --image Ubuntu2204 \
+        --admin-username azureuser \
+        --generate-ssh-keys \
+        --public-ip-sku Standard \
+        --location $(location)
+      
+      az vm open-port \
+        --port 80 \
+        --resource-group $(resourceGroup) \
+        --name $(vmName) \
+        --priority 1001
 
-- script: |
-    mkdir artifact
-    echo "EasyPark deploy realizado com sucesso" > artifact/deploy.txt
-    echo "Seu app estará disponível em: https://$(webAppName).azurewebsites.net" >> artifact/deploy.txt
-  displayName: 'Criar Informações do Deploy'
+- task: AzureCLI@2
+  displayName: 'Coletar IP da VM'
+  inputs:
+    azureSubscription: 'Sua-Conexao-Com-O-Azure'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      vmIp=$(az vm list-ip-addresses --resource-group $(resourceGroup) --name $(vmName) --query "[0].virtualMachine.network.publicIpAddresses[0].ipAddress" -o tsv)
+      
+      mkdir artifact
+      echo "EasyPark deploy em VM realizado" > artifact/deploy.txt
+      echo "Seu app estará disponível no IP: http://$vmIp" >> artifact/deploy.txt
 
 - task: PublishBuildArtifacts@1
   inputs:
-    尋athtoPublish: 'artifact'
+    PathtoPublish: 'artifact'
     ArtifactName: 'easypark-artifact'
   displayName: 'Publicar Artifact'
