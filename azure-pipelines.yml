@@ -6,28 +6,49 @@ pool:
 
 variables:
   resourceGroup: EasyPark-RG
-  plan: EasyPark-Plan
-  webapp: easypark-webapp-88
+  appServicePlan: EasyPark-Plan
+  webAppName: easypark-webapp-88
   location: eastus
 
 steps:
 
+- checkout: self
+
 - task: AzureCLI@2
+  displayName: Criar infraestrutura EasyPark
   inputs:
     azureSubscription: 'SUA-CONEXAO-AZURE'
     scriptType: bash
     scriptLocation: inlineScript
     inlineScript: |
-      az group create --name $(resourceGroup) --location $(location)
+      set -e
+
+      az account show
+
+      az group create \
+        --name $(resourceGroup) \
+        --location $(location)
 
       az appservice plan create \
-        --name $(plan) \
+        --name $(appServicePlan) \
         --resource-group $(resourceGroup) \
         --sku B1 \
         --is-linux
 
       az webapp create \
-        --name $(webapp) \
+        --name $(webAppName) \
         --resource-group $(resourceGroup) \
-        --plan $(plan) \
+        --plan $(appServicePlan) \
         --runtime "NODE|18-lts"
+
+- script: |
+    mkdir -p artifact
+    echo "EasyPark deploy realizado com sucesso" > artifact/deploy.txt
+    echo "https://$(webAppName).azurewebsites.net" >> artifact/deploy.txt
+  displayName: Criar artifact
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: artifact
+    ArtifactName: easypark-artifact
+  displayName: Publicar artifact
